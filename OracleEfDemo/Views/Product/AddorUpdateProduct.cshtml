@@ -1,0 +1,56 @@
+﻿@model ProductsDto
+@{
+    ViewData["Title"] = "Ürün Düzenle";
+    var categories = ViewData["Categories"] as List<CategoriesDto>;
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <form id="kaydetForm" method="post" autocomplete="off" class="form" asp-controller="Product" asp-action="AddorUpdateProduct">
+            <input type="hidden" asp-for="Id" />
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label asp-for="CategoryId" class="fs-6 fw-bold form-label mt-3">Kategori</label>
+                            <select asp-for="CategoryId" class="form-select text-center" data-control="select2" id="iconSelect" required>
+                                <option value="">Seçiminiz</option>
+                                @if (categories != null)
+                                {
+                                    @foreach (var item in categories)
+                                    {
+                                        <option value="@item.Id" selected="@(Model.CategoryId == item.Id ? "selected" : null)">
+                                            @item.CategoryName
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="ProductName" class="fs-6 fw-bold form-label mt-3">Ürün Adı</label>
+                            <input type="text" class="form-control form-control-solid universal-input" asp-for="ProductName" maxlength="25" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Price" class="fs-6 fw-bold form-label mt-3">Birim Fiyatı</label>
+                            <input type="text" class="form-control form-control-solid universal-input numeric-input" asp-for="Price" value="@(Model.Price == 0 ? "" : Model.Price)" required />
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-check form-check-solid mt-3">
+                                <input type="checkbox" class="form-check-input" asp-for="IsActive">
+                                <label class="form-label fw-bold" asp-for="IsActive">Aktif</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-9 offset-md-3">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-3">Kaydet</button>
+                        <a href="Categories" class="btn btn-secondary">Geri</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

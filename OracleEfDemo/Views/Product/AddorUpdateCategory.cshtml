@@ -1,0 +1,34 @@
+﻿@model CategoriesDto
+@{
+    ViewData["Title"] = "Kategori Düzenle";
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <form id="kaydetForm" method="post" autocomplete="off" class="form" asp-controller="Product" asp-action="AddorUpdateCategory">
+            <input type="hidden" asp-for="Id" />
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row fv-row mb-7">
+                        <div class="col-md-4">
+                            <label asp-for="CategoryName" class="fs-6 fw-bold form-label mt-3">Kategori Adı</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control form-control-solid universal-input" asp-for="CategoryName" maxlength="25" required/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-9 offset-md-3">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-3">Kaydet</button>
+                        <a href="Categories" class="btn btn-secondary">Geri</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
