@@ -1,5 +1,4 @@
-﻿
-namespace OracleEfDemo.Dtos
+﻿namespace OracleEfDemo.Dtos
 {
     public class OrderItemsDto : BaseDto
     {
@@ -7,7 +6,8 @@ namespace OracleEfDemo.Dtos
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
 
-        public OrdersDto OrdersDto { get; set; } = null!;
-        public ProductsDto ProductsDto { get; set; } = null!;
+        public int OrderId { get; set; }
+        public int ProductId { get; set; }
+        public ProductsDto? ProductsDto { get; set; }
     }
 }

@@ -1,0 +1,54 @@
+﻿@model LoginDto
+@{
+    Layout = "_LoginLayout";
+    ViewData["Title"] = "Oturum Aç";
+}
+
+<div class="d-flex flex-center flex-column flex-column-fluid">
+    <div class="w-lg-500px p-10 p-lg-15 mx-auto">
+        <form class="form w-100" novalidate="novalidate" id="loginForm" asp-controller="Login" asp-action="Login">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+            <div class="text-center mb-10">
+                <a href="/Home/Index" class="py-9 mb-5">
+                    <img alt="Logo" src="~/module/media/altunkaya-logo.png" class="h-md-125px logo" />
+                </a>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-info" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            <div asp-validation-summary=ModelOnly class="alert alert-danger" role="alert">
+            </div>
+
+            <div class="fv-row mb-10">
+                <label asp-for="Email" class="form-label fs-6 fw-bolder text-dark">E-Posta</label>
+                <input asp-for="Email" class="form-control form-control-lg form-control-solid" type="text" autocomplete="off" required />
+            </div>
+            <div class="fv-row mb-1">
+                <div class="d-flex flex-stack mb-2">
+                    <label asp-for="Password" class="form-label fw-bolder text-dark fs-6 mb-0">Şifre</label>
+                    <a href="/Login/ForgotPassword" class="link-primary fs-6 fw-bolder">Parolanızı mı unuttunuz?</a>
+                </div>
+                <input asp-for="Password" class="form-control form-control-lg form-control-solid" type="password" name="password" autocomplete="off" />
+            </div>
+            <div class="fv-row mb-10">
+                <div class="form-check rounded text-start p-3">
+                    <input class="form-check-input mx-1" type="checkbox" asp-for="RememberMe" checked />
+                    <label class="form-check-label fw-semibold" for="kurumsalCheck">
+                        Beni Hatırla
+                    </label>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-lg w-100 mb-5 btn-success" id="loginSubmit">
+                    <span class="text-white">Giriş Yap</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

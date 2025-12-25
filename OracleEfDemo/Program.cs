@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using OracleEfDemo.DbContext;
+using OracleEfDemo.Dtos;
+using OracleEfDemo.Helpers;
 using OracleEfDemo.Mapping;
 using OracleEfDemo.Models;
 
@@ -38,6 +40,19 @@ builder.Services.AddIdentity<UserApp, RoleApp>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
 }).AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    opt.Cookie.Name = "EfOracleCookie";
+    opt.Cookie.HttpOnly = true;
+    opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    opt.LoginPath = new PathString("/Login/Login");
+    opt.LogoutPath = new PathString("/Login/Login");
+    opt.ExpireTimeSpan = TimeSpan.FromHours(1);
+    opt.SlidingExpiration = false;
+});
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddAutoMapper(typeof(MapProfile));
 builder.Services.AddControllersWithViews();
 

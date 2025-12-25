@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using OracleEfDemo.DbContext;
@@ -7,6 +8,7 @@ using OracleEfDemo.Models;
 
 namespace OracleEfDemo.Controllers
 {
+    [Authorize]
     public class ProductController(AppDbContext context, IMapper mapper, IToastNotification toastNotification) : Controller
     {
         private readonly AppDbContext _context = context;
@@ -149,6 +151,34 @@ namespace OracleEfDemo.Controllers
 
             _toastNotification.AddWarningToastMessage("Ürün bulunamadı.");
             return RedirectToAction(nameof(Products));
+        }
+
+        [HttpGet]
+        public IActionResult GetProductWithCategoryId(int categoryId)
+        {
+            var data = _context.Products.Where(x => x.CategoryId == categoryId)
+                .Select(x => new
+                {
+                    id = x.Id,
+                    name = x.ProductName,
+                    price = x.Price
+                })
+                .ToList();
+
+            if (data.Count == 0)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Bu kategoriye ait ürün bulunamadı."
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                data
+            });
         }
     }
 }

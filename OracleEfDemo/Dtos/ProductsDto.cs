@@ -10,7 +10,7 @@ namespace OracleEfDemo.Dtos
 
         [Required]
         public decimal Price { get; set; }
-        
+
         public bool IsActive { get; set; } = true;
         public decimal StockQuantity { get; set; }
 

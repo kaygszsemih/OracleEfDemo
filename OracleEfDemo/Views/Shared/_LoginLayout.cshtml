@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Lidersan®</title>
+    <link rel="shortcut icon" href="~/favicon.ico" />
+
+    <link href="~/module/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/module/css/style.bundle.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body id="kt_body" class="bg-body">
+    <div class="d-flex flex-center flex-column flex-column-fluid">
+        @RenderBody()
+    </div>
+    <script src="~/module/plugins/global/plugins.bundle.js"></script>
+    <script src="~/module/js/scripts.bundle.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

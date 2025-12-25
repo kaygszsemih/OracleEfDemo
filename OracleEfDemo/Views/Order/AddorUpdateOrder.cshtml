@@ -1,0 +1,362 @@
+﻿@model OrdersDto
+@{
+    ViewData["Title"] = "Sipariş Düzenle";
+    var customers = ViewData["Customer"] as List<CustomersDto>;
+    var categories = ViewData["Categories"] as List<CategoriesDto>;
+    var orderItem = Model.OrderItemsDto.Count > 0 ? Model.OrderItemsDto[0] : new OrderItemsDto();
+    var product = orderItem.ProductsDto ?? new ProductsDto();
+    var customerDto = Model.CustomersDto ?? new CustomersDto();
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <form id="kaydetForm" method="post" autocomplete="off" class="form" asp-controller="Order" asp-action="AddorUpdateOrder">
+            <input type="hidden" asp-for="Id" />
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label asp-for="CustomerId" class="fs-6 fw-bold form-label mt-3">Müşteri</label>
+                            <select asp-for="CustomerId" class="form-select text-center" data-control="select2" required>
+                                <option value="">Seçiminiz</option>
+                                @if (customers != null)
+                                {
+                                    @foreach (var item in customers)
+                                    {
+                                        <option value="@item.Id" selected="@(customerDto.Id == item.Id ? "selected" : null)">
+                                            @item.FullName
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label asp-for="OrderNumber" class="fs-6 fw-bold form-label mt-3">Sipariş Numarası</label>
+                            <input type="text" class="form-control form-control-solid universal-input" asp-for="OrderNumber" value="@(string.IsNullOrEmpty(Model.OrderNumber) ? Guid.NewGuid() : Model.OrderNumber)" required readonly />
+                        </div>
+                        <hr />
+                        <div class="col-lg-12" id="date-container">
+                            <div class="date-item">
+                                <div class="row align-items-center text-center">
+                                    <div class="col-md-3">
+                                        <label class="fs-6 fw-bolder form-label mt-3">Kategori</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="fs-6 fw-bolder form-label mt-3">Ürün</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="fs-6 fw-bolder form-label mt-3">Birim Fiyat</label>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label class="fs-6 fw-bolder form-label mt-3">Miktar</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="fs-6 fw-bolder form-label mt-3">Satır Toplam</label>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-md-3">
+                                        <select class="form-select text-center categorySelect" data-control="select2" required>
+                                            <option value="">Seçiminiz</option>
+                                            @if (categories != null)
+                                            {
+                                                @foreach (var item in categories)
+                                                {
+                                                    <option value="@item.Id" selected="@(product.CategoryId == item.Id ? "selected" : null)">
+                                                        @item.CategoryName
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="hidden" class="productName" name="OrderItemsDto[0].ProductName" />
+                                        <select class="form-select text-center productSelect" name="OrderItemsDto[0].ProductId" data-control="select2" data-selected="@(Model.OrderItemsDto != null && Model.OrderItemsDto.Count > 0 ? Model.OrderItemsDto[0].ProductId : "")" required>
+                                            <option value="">Seçiminiz</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control universal-input numeric-input" name="OrderItemsDto[0].UnitPrice" value="@(Model.OrderItemsDto != null && Model.OrderItemsDto.Count > 0 ? Model.OrderItemsDto[0].UnitPrice : "")" readonly>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input type="text" class="form-control universal-input numeric-input quantityInput" name="OrderItemsDto[0].Quantity" value="@(Model.OrderItemsDto != null && Model.OrderItemsDto.Count > 0 ? Model.OrderItemsDto[0].Quantity : "")" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control form-control-solid universal-input numeric-input rowTotal" readonly>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-primary btn-icon btn-sm" type="button" id="add-date-btn"><i class="bi bi-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.OrderItemsDto != null && Model.OrderItemsDto.Count > 0)
+                            {
+                                @for (int i = 1; i < Model.OrderItemsDto.Count; i++)
+                                {
+                                    <div class="date-item">
+                                        <div class="row mb-3 align-items-center">
+                                            <div class="col-md-3">
+                                                <select class="form-select text-center categorySelect" data-control="select2" required>
+                                                    <option value="">Seçiminiz</option>
+                                                    @if (categories != null)
+                                                    {
+                                                        @foreach (var item in categories)
+                                                        {
+                                                            <option value="@item.Id" selected="@(Model.OrderItemsDto[i].ProductsDto?.CategoryId == item.Id ? "selected" : null)">
+                                                                @item.CategoryName
+                                                            </option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="hidden" class="productName" name="OrderItemsDto[@i].ProductName" />
+                                                <select class="form-select text-center productSelect" name="OrderItemsDto[@i].ProductId" data-control="select2" data-selected="@Model.OrderItemsDto[i].ProductId" required>
+                                                    <option value="">Seçiminiz</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" class="form-control universal-input numeric-input" name="OrderItemsDto[@i].UnitPrice" value="@Model.OrderItemsDto[i].UnitPrice" readonly>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="text" class="form-control universal-input numeric-input quantityInput" name="OrderItemsDto[@i].Quantity" value="@Model.OrderItemsDto[i].Quantity" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" class="form-control form-control-solid universal-input numeric-input rowTotal" readonly>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button class="btn btn-danger btn-sm btn-icon remove-date-btn" type="button"><i class="bi bi-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="col-lg-3 offset-9">
+                            <span class="fw-bolder">Toplam:</span>
+                            <span id="colTotal"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-9 offset-md-3">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-3">Kaydet</button>
+                        <a href="Orders" class="btn btn-secondary">Geri</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/template" id="orderItemRowTpl">
+        <div class="date-item">
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-3">
+                    <select class="form-select text-center categorySelect" required>
+                        <option value="">Seçiminiz</option>
+                        @if (categories != null)
+                        {
+                            @foreach (var item in categories)
+                            {
+                                <option value="@item.Id">
+                                    @item.CategoryName
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="hidden" class="productName" name="OrderItemsDto[__index__].ProductName" />
+                    <select class="form-select text-center productSelect" name="OrderItemsDto[__index__].ProductId" required>
+                        <option value="">Seçiminiz</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control universal-input numeric-input" name="OrderItemsDto[__index__].UnitPrice" readonly>
+                </div>
+                <div class="col-md-1">
+                    <input type="text" class="form-control universal-input numeric-input quantityInput" name="OrderItemsDto[__index__].Quantity" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control form-control-solid universal-input numeric-input rowTotal" readonly>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-danger btn-sm btn-icon remove-date-btn" type="button"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script>
+        function toNumber(val) {
+            if (val == null) return 0;
+            val = val.toString().trim();
+            if (!val) return 0;
+
+            const hasDot = val.includes('.');
+            const hasComma = val.includes(',');
+
+            if (hasDot && hasComma) {
+                val = val.replace(/\./g, '').replace(',', '.');
+            } else if (hasComma && !hasDot) {
+                val = val.replace(',', '.');
+            }
+
+            const n = Number(val);
+            return Number.isFinite(n) ? n : 0;
+        }
+
+        function formatMoney(val) {
+            return (val || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function calculateRow($row) {
+            const qty = toNumber($row.find('.quantityInput').val());
+
+            const $selected = $row.find('select.productSelect option:selected');
+            const unit = toNumber($selected.attr('data-unitprice'));
+
+            const lineTotal = unit * qty;
+
+            $row.find('input[name$=".UnitPrice"]').val(unit > 0 ? formatMoney(unit) : "");
+
+            $row.find('.rowTotal').val(lineTotal > 0 ? formatMoney(lineTotal) : "");
+            
+            return lineTotal;
+        }
+
+        function calculateTotal() {
+            let total = 0;
+
+            $('#date-container .date-item').each(function () {
+                total += calculateRow($(this));
+            });
+
+            $('#colTotal').text(formatMoney(total));
+        }
+
+        function resetProductSelect($row) {
+            const $prod = $row.find('select.productSelect');
+            $prod.empty().append(new Option("Seçiminiz", "", true, true)).trigger('change');
+            $row.find('input[name$=".UnitPrice"]').val("");
+            $row.find('.rowTotal').val("");
+
+            $row.find('.productName').val("");
+
+            calculateTotal();
+        }
+        
+        $(document).on('change', 'select.categorySelect', function () {
+            const $row = $(this).closest('.date-item');
+            const $prod = $row.find('select.productSelect');
+
+            $prod.attr('data-selected', '');
+
+            loadProductsForRow($row, false);
+        });
+
+        function loadProductsForRow($row, preserveSelected) {
+            const categoryId = $row.find('select.categorySelect').val();
+            const $prod = $row.find('select.productSelect');
+
+            const selectedId = preserveSelected ? ($prod.attr('data-selected') || "") : "";
+
+            $prod.empty().append(new Option("Seçiminiz", "", true, true));
+            $row.find('input[name$=".UnitPrice"]').val("");
+            $row.find('.rowTotal').val("");
+            $row.find('.productName').val("");
+
+            $prod.val("").trigger('change.select2');
+
+            if (!categoryId) return;
+
+            $.ajax({
+                type: "GET",
+                url: "/Product/GetProductWithCategoryId",
+                data: { categoryId },
+                dataType: "json",
+                success: function (res) {
+                    if (!res || !res.success) return;
+
+                    $prod.empty().append(new Option("Seçiminiz", "", true, true));
+
+                    res.data.forEach(p => {
+                        const opt = new Option(p.name, p.id, false, false);
+                        $(opt).attr('data-unitprice', p.price);
+                        $prod.append(opt);
+                    });
+
+                    if (selectedId) {
+                        $prod.val(String(selectedId));
+                    } else {
+                        $prod.val("");
+                    }
+
+                    $prod.trigger('change.select2');
+
+                    const text = $prod.find('option:selected').text();
+                    $row.find('.productName').val(text && text !== "Seçiminiz" ? text : "");
+
+                    calculateRow($row);
+                    calculateTotal();
+                },
+                error: function (xhr) {
+                    console.error("Ürün doldurma hatası:", xhr.responseText || xhr.statusText);
+                }
+            });
+        }
+
+        $(document).on('change', 'select.productSelect', function () {
+            const $row = $(this).closest('.date-item');
+
+            const text = $(this).find('option:selected').text();
+            $row.find('.productName').val(text && text !== "Seçiminiz" ? text : "");
+
+            calculateRow($row);
+            calculateTotal();
+        });
+
+        $(document).on('input', '.quantityInput', function () {
+            const $row = $(this).closest('.date-item');
+            calculateRow($row);
+            calculateTotal();
+        });
+
+        $(document).ready(function () {
+            calculateTotal();
+            
+            $('#date-container .date-item').each(function () {
+                loadProductsForRow($(this), true);
+            });
+        });
+
+        $('#add-date-btn').on('click', function(){
+            var container = $('#date-container');
+            var index = container.find('.date-item').length;
+
+            var tpl = $('#orderItemRowTpl').html();
+            tpl = tpl.replaceAll('__index__', index);
+
+            container.append(tpl);
+
+            container.find('.date-item').last().find('select.categorySelect, select.productSelect').select2();
+        });
+
+        $('#date-container').on('click', '.remove-date-btn', function() {
+            $(this).closest('.date-item').remove();
+
+            $('#date-container .date-item').each(function (index){
+                $(this).find('input[name], select[name]').each(function () {
+                    var name = $(this).attr('name');
+                    var updatedName = name.replace(/\[\d+\]/, `[${index}]`);
+                    $(this).attr("name", updatedName);
+                });
+            });
+
+            calculateTotal();
+        });
+    </script>
+}

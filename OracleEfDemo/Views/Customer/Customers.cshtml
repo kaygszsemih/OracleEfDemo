@@ -1,0 +1,69 @@
+﻿@model List<CustomersDto>
+@{
+    ViewData["Title"] = "Müşteri Listesi";
+}
+
+<div class="card">
+    <div class="card-header justify-content-end align-items-center">
+        <a href="AddorUpdateCustomer" class="btn btn-success mx-1">Yeni Müşteri Ekle</a>
+    </div>
+    <div class="card-body p-0 tab-pane fade show active" role="tabpanel">
+        <div class="table-responsive">
+            <table class="table table-row-bordered table-striped align-middle gy-4 gs-9" id="CustomerTable">
+                <thead class="border-bottom fs-6 text-gray-600 fw-bolder bg-light bg-opacity-75">
+                    <tr>
+                        <td>Müşteri Adı</td>
+                        <td>E-Posta</td>
+                        <td>Telefon</td>
+                        <td>Toplam Sipariş Tutarı</td>
+                        <td>Sipariş Ayrıntıları</td>
+                        <td>Değiştir/Sil</td>
+                    </tr>
+                </thead>
+                <tbody class="fw-bold text-gray-600">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.FullName</td>
+                            <td>@item.Email</td>
+                            <td>@item.Phone</td>
+                            <td>@item.OrderTotal</td>
+                            <td>
+                                <a href="CustomerOrderList?customerId=@item.Id" class="btn btn-icon btn-info"><i class="bi bi-receipt"></i></a>
+                            </td>
+                            <td>
+                                <a href="AddorUpdateCustomer?id=@item.Id" class="btn btn-icon btn-success"><i class="bi bi-pencil"></i></a>
+                                <button class="btn btn-icon btn-danger deleteButton" data-id="@item.Id"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#CustomerTable').on('click', '.deleteButton', function (e) {
+            e.preventDefault();
+
+            const id = e.currentTarget.getAttribute("data-id");
+
+            Swal.fire({
+                  title: "Bu kaydı silmek istediğine emin misin?",
+                  text: "Bu işlem geri alınamaz!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Evet, Eminim",
+                  cancelButtonText: "Geri"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `RemoveCustomer?id=${id}`;
+                }
+            });
+        });
+    </script>
+}

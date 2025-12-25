@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label asp-for="CategoryId" class="fs-6 fw-bold form-label mt-3">Kategori</label>
-                            <select asp-for="CategoryId" class="form-select text-center" data-control="select2" id="iconSelect" required>
+                            <select asp-for="CategoryId" class="form-select text-center" data-control="select2" required>
                                 <option value="">Seçiminiz</option>
                                 @if (categories != null)
                                 {
@@ -47,7 +47,7 @@
                 <div class="col-md-9 offset-md-3">
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-success me-3">Kaydet</button>
-                        <a href="Categories" class="btn btn-secondary">Geri</a>
+                        <a href="Products" class="btn btn-secondary">Geri</a>
                     </div>
                 </div>
             </div>

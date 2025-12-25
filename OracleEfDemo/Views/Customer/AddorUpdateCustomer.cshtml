@@ -1,0 +1,44 @@
+﻿@model CustomersDto
+@{
+    ViewData["Title"] = "Müşteri Düzenle";
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <form id="kaydetForm" method="post" autocomplete="off" class="form" asp-controller="Customer" asp-action="AddorUpdateCustomer">
+            <input type="hidden" asp-for="Id" />
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label asp-for="FullName" class="fs-6 fw-bold form-label mt-3">Müşteri Adı</label>
+                            <input type="text" class="form-control form-control-solid universal-input text-capitalize" maxlength="50" asp-for="FullName" maxlength="50" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Email" class="fs-6 fw-bold form-label mt-3">E-Posta</label>
+                            <input type="email" class="form-control form-control-solid universal-input email-input" maxlength="50" asp-for="Email" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Phone" class="fs-6 fw-bold form-label mt-3">Telefon</label>
+                            <input type="text" class="form-control form-control-solid universal-input phone-input" maxlength="25" asp-for="Phone" placeholder="___-___-____"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Address" class="fs-6 fw-bold form-label mt-3">Adres</label>
+                            <textarea class="form-control form-control-solid charcount-input universal-input" data-maxlength="255" asp-for="Address"></textarea>
+                            <span class="char-count text-muted"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-9 offset-md-3">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-3">Kaydet</button>
+                        <a href="Customers" class="btn btn-secondary">Geri</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
