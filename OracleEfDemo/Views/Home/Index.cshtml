@@ -1,13 +1,99 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model DashboardDto
+@{
+    ViewData["Title"] = "Dashboard";
+    var custumerSum = Model.Customers.Sum(x => x.OrderTotal);
+    var orderSum = Model.Orders.Sum(x => x.Total);
 }
 
 <div class="row">
     <div class="col-lg-6">
-        <h4 class="text-center">Müşteri Listesi</h4>
+        <div class="card">
+            <div class="card-header align-items-center">
+                <h4>Müşteri Listesi</h4>
+            </div>
+            <div class="card-body p-0 tab-pane fade show active" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-row-bordered table-striped align-middle gy-4 gs-9" id="CustomerTable">
+                        <thead class="border-bottom fs-6 text-gray-600 fw-bolder bg-light bg-opacity-75">
+                            <tr>
+                                <td>Müşteri Adı</td>
+                                <td>E-Posta</td>
+                                <td>Telefon</td>
+                                <td class="text-end">Toplam Sipariş Tutarı</td>
+                                <td>Sipariş Ayrıntıları</td>
+                            </tr>
+                        </thead>
+                        <tbody class="fw-bold text-gray-600">
+                            @foreach (var item in Model.Customers)
+                            {
+                                <tr>
+                                    <td>@item.FullName</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Phone</td>
+                                    <td class="text-end">@item.OrderTotal.ToString("C", new CultureInfo("tr-TR"))</td>
+                                    <td>
+                                        <button type="button" class="btn btn-icon btn-info js-orders" data-id="@item.Id">
+                                            <i class="bi bi-receipt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="border-top fw-bolder bg-light">
+                            <tr>
+                                <td colspan="3" class="text-end">Genel Toplam:</td>
+                                <td class="text-end">
+                                    @custumerSum.ToString("C", new CultureInfo("tr-TR"))
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-lg-6">
-        <h4 class="text-center">Sipariş Listesi</h4>
+        <div class="card">
+            <div class="card-header align-items-center">
+                <h4>Sipariş Listesi</h4>
+            </div>
+            <div class="card-body p-0 tab-pane fade show active" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-row-bordered table-striped align-middle gy-4 gs-9" id="OrderTable">
+                        <thead class="border-bottom fs-6 text-gray-600 fw-bolder bg-light bg-opacity-75">
+                            <tr>
+                                <td>Sipariş No</td>
+                                <td>Müşteri Adı</td>
+                                <td class="text-end">Sipariş Tutarı</td>
+                                <td>Sipariş Tarihi</td>
+                            </tr>
+                        </thead>
+                        <tbody class="fw-bold text-gray-600">
+                            @foreach (var item in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@item.OrderNumber</td>
+                                    <td>@item.CustomerName</td>
+                                    <td class="text-end">@item.Total.ToString("C", new CultureInfo("tr-TR"))</td>
+                                    <td>@item.OrderDate.ToShortDateString()</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="border-top fw-bolder bg-light">
+                            <tr>
+                                <td colspan="2" class="text-end">Genel Toplam:</td>
+                                <td class="text-end">
+                                    @orderSum.ToString("C", new CultureInfo("tr-TR"))
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
+@await Html.PartialAsync("_CustomerOrderModalPartial")

@@ -1,0 +1,49 @@
+﻿@model UserDto
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <form id="kaydetForm" method="post" autocomplete="off" class="form mb-3" asp-controller="User" asp-action="AddorUpdateUser">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label asp-for="FullName" class="fs-6 fw-bold form-label mt-3">Kullanıcı Adı</label>
+                            <input type="text" class="form-control form-control-solid universal-input text-capitalize" maxlength="50" asp-for="FullName" maxlength="50" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Email" class="fs-6 fw-bold form-label mt-3">E-Posta</label>
+                            <input type="email" class="form-control form-control-solid universal-input email-input" maxlength="50" asp-for="Email" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="PhoneNumber" class="fs-6 fw-bold form-label mt-3">Telefon</label>
+                            <input type="text" class="form-control form-control-solid universal-input phone-input" maxlength="25" asp-for="PhoneNumber" placeholder="___-___-____" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Department" class="fs-6 fw-bold form-label mt-3">Departman</label>
+                            <input type="text" class="form-control form-control-solid universal-input text-capitalize" maxlength="25" asp-for="Department" />
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="Salary" class="fs-6 fw-bold form-label mt-3">Maaş</label>
+                            <input type="text" class="form-control form-control-solid universal-input numeric-input" asp-for="Salary" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-9 offset-md-3">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-3">Kaydet</button>
+                        <a href="Users" class="btn btn-secondary">Geri</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div asp-validation-summary=ModelOnly class="alert alert-danger" role="alert">
+        </div>
+    </div>
+</div>

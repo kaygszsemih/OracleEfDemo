@@ -1,4 +1,21 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(document).on('click', '.js-orders', function () {
+    const customerId = $(this).data('id');
 
-// Write your JavaScript code.
+    $('#ordersModalBody').html('<div class="text-center py-4">Yükleniyor...</div>');
+
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('ordersModal'));
+    modal.show();
+
+    $.ajax({
+        url: '/Order/CustomerOrders',
+        type: 'GET',
+        data: { customerId: customerId },
+        success: function (html) {
+            $('#ordersModalBody').html(html);
+        },
+        error: function (xhr) {
+            console.error(xhr);
+            $('#ordersModalBody').html('<div class="alert alert-danger mb-0">Siparişler yüklenemedi.</div>');
+        }
+    });
+});

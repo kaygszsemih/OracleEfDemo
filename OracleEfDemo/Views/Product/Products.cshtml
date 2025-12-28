@@ -5,7 +5,7 @@
 
 <div class="card">
     <div class="card-header justify-content-end align-items-center">
-        <a href="AddorUpdateProduct" class="btn btn-success mx-1">Yeni Ürün Ekle</a>
+        <a href="AddorUpdateProduct" class="btn btn-success mx-1"><i class="bi bi-plus fs-3"></i>Yeni Ürün Ekle</a>
     </div>
     <div class="card-body p-0 tab-pane fade show active" role="tabpanel">
         <div class="table-responsive">
@@ -16,6 +16,7 @@
                         <td>Durum</td>
                         <td>Stok</td>
                         <td>Birim Fiyat</td>
+                        <td>Stok Güncelle</td>
                         <td>Değiştir/Sil</td>
                     </tr>
                 </thead>
@@ -28,13 +29,43 @@
                             <td>@item.StockQuantity.ToString("N2")</td>
                             <td>@item.Price.ToString("C", new CultureInfo("tr-TR"))</td>
                             <td>
+                                <button type="button" class="btn btn-icon btn-primary updateStockBtn" data-bs-toggle="modal" data-bs-target="#stockUpdateModal" data-id="@item.Id"><i class="bi bi-box-arrow-in-up"></i></button>
+                            </td>
+                            <td>
                                 <a href="AddorUpdateProduct?id=@item.Id" class="btn btn-icon btn-success"><i class="bi bi-pencil"></i></a>
-                                <button class="btn btn-icon btn-danger deleteButton" data-id="@item.Id"><i class="bi bi-trash"></i></button>
+                                <button type="button" class="btn btn-icon btn-danger deleteButton" data-id="@item.Id"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="stockUpdateModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-controller="Product" asp-action="UpdateProductStock" method="post" autocomplete="off">
+                <div class="modal-header">
+                    <h5 class="modal-title">Stok Güncellemesi</h5>
+
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-2x"></span>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="productId" id="productId" />
+                    <label for="newStockQuantity" class="fs-6 fw-bold form-label mt-3">Stok Miktarı</label>
+                    <input type="number" class="form-control form-control-solid" step="0.01" name="newStockQuantity" id="newStockQuantity" maxlength="25" required />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-success">Stok Güncelle</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -60,6 +91,18 @@
                     window.location.href = `RemoveProduct?id=${id}`;
                 }
             });
+        });
+
+        $('#stockUpdateModal').on('show.bs.modal', function (e) {
+            const button = $(e.relatedTarget);
+            const prodId = button.data('id');
+
+            $(this).find('#productId').val(prodId);
+        });
+
+        $('#stockUpdateModal').on('hidden.bs.modal', function () {
+            $(this).find('#productId').val('');
+            $(this).find('#newStockQuantity').val('');
         });
     </script>
 }

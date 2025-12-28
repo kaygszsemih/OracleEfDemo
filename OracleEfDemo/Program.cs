@@ -51,6 +51,7 @@ builder.Services.ConfigureApplicationCookie(opt =>
     opt.SlidingExpiration = false;
 });
 
+builder.Services.AddScoped<GenericRepository>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddAutoMapper(typeof(MapProfile));

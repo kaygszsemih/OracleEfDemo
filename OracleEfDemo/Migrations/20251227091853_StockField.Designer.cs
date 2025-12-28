@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using OracleEfDemo.DbContext;
@@ -11,14 +12,16 @@ using OracleEfDemo.DbContext;
 namespace OracleEfDemo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251227091853_StockField")]
+    partial class StockField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("EFUSER")
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "8.0.21")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -156,9 +159,6 @@ namespace OracleEfDemo.Migrations
                         .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryName")
-                        .IsUnique();
 
                     b.ToTable("CATEGORIES", "EFUSER");
                 });
@@ -317,9 +317,6 @@ namespace OracleEfDemo.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("ProductName")
-                        .IsUnique();
 
                     b.ToTable("PRODUCTS", "EFUSER");
                 });
@@ -487,7 +484,7 @@ namespace OracleEfDemo.Migrations
                         {
                             Id = "5cd9ecaa-4346-4b27-a9f8-a9a54e63a8d6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9569bbea-c4f5-4c31-87ed-9559dd437894",
+                            ConcurrencyStamp = "b2fa1fce-8e35-43c5-afa0-6be534449cc4",
                             CreatedDate = new DateTime(2025, 12, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kaygsz.semih@gmail.com",
                             EmailConfirmed = true,
@@ -495,13 +492,13 @@ namespace OracleEfDemo.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "KAYGSZ.SEMIH@GMAIL.COM",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJmW4Xn3Kl2CcrQ6OILyvCygiPli4F4XKXuyWiiB007jrrD+4Cr9mObwBdxTF+yhow==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJreNPBACrbmnJNX324WtQ2Texherum6oxyExLBjQdJraWsfG8gxsaKUwN8QWjPC9w==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = true,
                             Salary = 0m,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
-                            UpdatedDate = new DateTime(2025, 12, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            UpdatedDate = new DateTime(2025, 12, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             UserName = "Administrator"
                         });
                 });

@@ -1,20 +1,23 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using OracleEfDemo.DbContext;
 using OracleEfDemo.Dtos;
+using OracleEfDemo.Helpers;
 using OracleEfDemo.Models;
 
 namespace OracleEfDemo.Controllers
 {
     [Authorize]
-    public class OrderController(AppDbContext context, IMapper mapper, IToastNotification toastNotification) : Controller
+    public class OrderController(AppDbContext context, IMapper mapper, IToastNotification toastNotification, GenericRepository repository) : Controller
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly IToastNotification _toastNotification = toastNotification;
+        private readonly GenericRepository _repository = repository;
 
         public IActionResult Orders()
         {
@@ -54,6 +57,8 @@ namespace OracleEfDemo.Controllers
                 return RedirectToAction(nameof(Orders));
             }
 
+            _repository.SetOracleUserName(User.GetUserName());
+
             if (model.Id > 0)
             {
                 var orderData = _context.Orders.Include(x => x.OrderItems).First(x => x.Id == model.Id);
@@ -64,6 +69,23 @@ namespace OracleEfDemo.Controllers
                     return RedirectToAction(nameof(Orders));
                 }
 
+                foreach (var item in orderData.OrderItems)
+                {
+                    var modelQuantity = model.OrderItemsDto.FirstOrDefault(x => x.ProductId == item.ProductId)?.Quantity ?? 0;
+                    var quantityDifference = item.Quantity - modelQuantity;
+
+                    if (quantityDifference != 0)
+                    {
+                        var (result, message) = _repository.TryUpdateStock(item.ProductId, quantityDifference);
+
+                        if (!result)
+                        {
+                            _toastNotification.AddWarningToastMessage("Seçilen ürünlerin içinde stoğu eksiye düşecek ürünler vardır. Lütfen kontrol ediniz.");
+                            return RedirectToAction(nameof(Orders));
+                        }
+                    }
+                }
+
                 _mapper.Map(model, orderData);
                 _context.Orders.Update(orderData);
 
@@ -71,6 +93,17 @@ namespace OracleEfDemo.Controllers
             }
             else
             {
+                foreach (var item in model.OrderItemsDto)
+                {
+                    var (result, message) = _repository.TryUpdateStock(item.ProductId, -1 * item.Quantity);
+
+                    if (!result)
+                    {
+                        _toastNotification.AddWarningToastMessage("Seçilen ürünlerin içinde stoğu eksiye düşecek ürünler vardır. Lütfen kontrol ediniz.");
+                        return RedirectToAction(nameof(Orders));
+                    }
+                }
+
                 var data = _mapper.Map<Orders>(model);
                 _context.Orders.Add(data);
 
@@ -96,6 +129,14 @@ namespace OracleEfDemo.Controllers
 
             _toastNotification.AddWarningToastMessage("Sipariş bulunamadı.");
             return RedirectToAction(nameof(Orders));
+        }
+
+        [HttpGet]
+        public IActionResult CustomerOrders(int customerId)
+        {
+            var orders = _repository.GetCustomerOrders(customerId);
+
+            return PartialView("_CustomerOrdersPartial", orders);
         }
     }
 }

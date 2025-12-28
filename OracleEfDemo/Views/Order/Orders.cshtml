@@ -1,11 +1,12 @@
 ﻿@model List<OrderListDto>
 @{
     ViewData["Title"] = "Sipariş Listesi";
+    var orderSum = Model.Sum(x => x.Total);
 }
 
 <div class="card">
     <div class="card-header justify-content-end align-items-center">
-        <a href="AddorUpdateOrder" class="btn btn-success mx-1">Yeni Sipariş Ekle</a>
+        <a href="AddorUpdateOrder" class="btn btn-success mx-1"><i class="bi bi-plus fs-3"></i>Yeni Sipariş Ekle</a>
     </div>
     <div class="card-body p-0 tab-pane fade show active" role="tabpanel">
         <div class="table-responsive">
@@ -14,7 +15,7 @@
                     <tr>
                         <td>Sipariş No</td>
                         <td>Müşteri Adı</td>
-                        <td>Sipariş Tutarı</td>
+                        <td class="text-end">Sipariş Tutarı</td>
                         <td>Sipariş Tarihi</td>
                         <td>Değiştir/Sil</td>
                     </tr>
@@ -25,7 +26,7 @@
                         <tr>
                             <td>@item.OrderNumber</td>
                             <td>@item.CustomerName</td>
-                            <td>@item.Total.ToString("C", new CultureInfo("tr-TR"))</td>
+                            <td class="text-end">@item.Total.ToString("C", new CultureInfo("tr-TR"))</td>
                             <td>@item.OrderDate.ToShortDateString()</td>
                             <td>
                                 <a href="AddorUpdateOrder?id=@item.Id" class="btn btn-icon btn-success"><i class="bi bi-pencil"></i></a>
@@ -34,6 +35,15 @@
                         </tr>
                     }
                 </tbody>
+                <tfoot class="border-top fw-bolder bg-light">
+                    <tr>
+                        <td colspan="2" class="text-end">Genel Toplam:</td>
+                        <td class="text-end">
+                            @orderSum.ToString("C", new CultureInfo("tr-TR"))
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>

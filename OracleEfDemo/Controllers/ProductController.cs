@@ -1,19 +1,25 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NToastNotify;
+using Oracle.ManagedDataAccess.Client;
 using OracleEfDemo.DbContext;
 using OracleEfDemo.Dtos;
+using OracleEfDemo.Helpers;
 using OracleEfDemo.Models;
+using System.Globalization;
 
 namespace OracleEfDemo.Controllers
 {
     [Authorize]
-    public class ProductController(AppDbContext context, IMapper mapper, IToastNotification toastNotification) : Controller
+    public class ProductController(AppDbContext context, IMapper mapper, IToastNotification toastNotification, GenericRepository repository) : Controller
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly IToastNotification _toastNotification = toastNotification;
+        private readonly GenericRepository _repository = repository;
 
         public IActionResult Categories()
         {
@@ -42,6 +48,14 @@ namespace OracleEfDemo.Controllers
                 return View();
             }
 
+            var checkCategoryName = _context.Categories.Any(x => x.CategoryName == model.CategoryName);
+
+            if (checkCategoryName)
+            {
+                _toastNotification.AddErrorToastMessage("Aynı isime ait başka bir kayıt mevcut.");
+                return View(model);
+            }
+
             if (model.Id > 0)
             {
                 var category = _context.Categories.Find(model.Id);
@@ -67,7 +81,13 @@ namespace OracleEfDemo.Controllers
         {
             var category = _context.Categories.Find(id);
 
-            if (category != null)
+            if (category == null)
+            {
+                _toastNotification.AddErrorToastMessage("Kategori bulunamadı.");
+                return RedirectToAction(nameof(Categories));
+            }
+
+            try
             {
                 _context.Categories.Remove(category);
                 _context.SaveChanges();
@@ -75,9 +95,16 @@ namespace OracleEfDemo.Controllers
                 _toastNotification.AddSuccessToastMessage("Kategori silindi.");
                 return RedirectToAction(nameof(Categories));
             }
+            catch (DbUpdateException ex) when (ex.GetBaseException() is OracleException oex)
+            {
+                if (oex.Number == 2292)
+                {
+                    _toastNotification.AddErrorToastMessage("Bu kategoriye bağlı kayıtlar olduğu için silinemez.");
+                    return RedirectToAction(nameof(Categories));
+                }
 
-            _toastNotification.AddWarningToastMessage("Kategori bulunamadı.");
-            return RedirectToAction(nameof(Categories));
+                throw;
+            }
         }
 
         public IActionResult Products()
@@ -107,6 +134,14 @@ namespace OracleEfDemo.Controllers
             {
                 _toastNotification.AddWarningToastMessage("Eksik yada hatalı bilgi. Bilgileri kontrol edip tekrar deneyin.");
                 return View();
+            }
+
+            var checkProductName = _context.Products.Any(x => x.ProductName == model.ProductName);
+
+            if (checkProductName)
+            {
+                _toastNotification.AddErrorToastMessage("Aynı isime ait başka bir kayıt mevcut.");
+                return View(model);
             }
 
             if (model.Id > 0)
@@ -156,7 +191,7 @@ namespace OracleEfDemo.Controllers
         [HttpGet]
         public IActionResult GetProductWithCategoryId(int categoryId)
         {
-            var data = _context.Products.Where(x => x.CategoryId == categoryId)
+            var data = _context.Products.Where(x => x.CategoryId == categoryId && x.IsActive)
                 .Select(x => new
                 {
                     id = x.Id,
@@ -179,6 +214,28 @@ namespace OracleEfDemo.Controllers
                 success = true,
                 data
             });
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProductStock(int productId, string newStockQuantity)
+        {
+            var raw = (newStockQuantity ?? "").Trim();
+
+            if (!decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out var qty))
+            {
+                _toastNotification.AddErrorToastMessage("Geçersiz stok miktarı.");
+                return RedirectToAction(nameof(Products));
+            }
+
+            _repository.SetOracleUserName(User.GetUserName());
+            var (result, message) = _repository.TryUpdateStock(productId, qty);
+
+            if (result)
+                _toastNotification.AddSuccessToastMessage(message);
+            else
+                _toastNotification.AddErrorToastMessage(message);
+
+            return RedirectToAction(nameof(Products));
         }
     }
 }

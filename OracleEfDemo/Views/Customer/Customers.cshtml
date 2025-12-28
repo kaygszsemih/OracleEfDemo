@@ -1,11 +1,12 @@
-﻿@model List<CustomersDto>
+﻿@model List<CustomerListDto>
 @{
     ViewData["Title"] = "Müşteri Listesi";
+    var totalOrderSum = Model.Sum(x => x.OrderTotal);
 }
 
 <div class="card">
     <div class="card-header justify-content-end align-items-center">
-        <a href="AddorUpdateCustomer" class="btn btn-success mx-1">Yeni Müşteri Ekle</a>
+        <a href="AddorUpdateCustomer" class="btn btn-success mx-1"><i class="bi bi-plus fs-3"></i>Yeni Müşteri Ekle</a>
     </div>
     <div class="card-body p-0 tab-pane fade show active" role="tabpanel">
         <div class="table-responsive">
@@ -15,7 +16,7 @@
                         <td>Müşteri Adı</td>
                         <td>E-Posta</td>
                         <td>Telefon</td>
-                        <td>Toplam Sipariş Tutarı</td>
+                        <td class="text-end">Toplam Sipariş Tutarı</td>
                         <td>Sipariş Ayrıntıları</td>
                         <td>Değiştir/Sil</td>
                     </tr>
@@ -27,9 +28,11 @@
                             <td>@item.FullName</td>
                             <td>@item.Email</td>
                             <td>@item.Phone</td>
-                            <td>@item.OrderTotal</td>
+                            <td class="text-end">@item.OrderTotal.ToString("C", new CultureInfo("tr-TR"))</td>
                             <td>
-                                <a href="CustomerOrderList?customerId=@item.Id" class="btn btn-icon btn-info"><i class="bi bi-receipt"></i></a>
+                                <button type="button" class="btn btn-icon btn-info js-orders" data-id="@item.Id">
+                                    <i class="bi bi-receipt"></i>
+                                </button>
                             </td>
                             <td>
                                 <a href="AddorUpdateCustomer?id=@item.Id" class="btn btn-icon btn-success"><i class="bi bi-pencil"></i></a>
@@ -38,10 +41,20 @@
                         </tr>
                     }
                 </tbody>
+                <tfoot class="border-top fw-bolder bg-light">
+                    <tr>
+                        <td colspan="3" class="text-end">Genel Toplam:</td>
+                        <td class="text-end">
+                            @totalOrderSum.ToString("C", new CultureInfo("tr-TR"))
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
 </div>
+@await Html.PartialAsync("_CustomerOrderModalPartial")
 
 @section Scripts {
     <script>

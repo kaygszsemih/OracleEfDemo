@@ -38,11 +38,19 @@ namespace OracleEfDemo.DbContext
             builder.Entity<UserApp>().ToTable("EMPLOYEES");
 
             #region Categories data conf
-            builder.Entity<Categories>().Property(x => x.CategoryName).HasMaxLength(25);
+            builder.Entity<Categories>(x =>
+            {
+                x.Property(x => x.CategoryName).HasMaxLength(25);
+                x.HasIndex(x => x.CategoryName).IsUnique();
+            });
             #endregion
 
             #region Products data conf
-            builder.Entity<Products>().Property(x => x.ProductName).HasMaxLength(25);
+            builder.Entity<Products>(x =>
+            {
+                x.Property(x => x.ProductName).HasMaxLength(25);
+                x.HasIndex(x => x.ProductName).IsUnique();
+            });
             builder.Entity<Products>().Property(x => x.Price).HasPrecision(18, 2);
             builder.Entity<Products>().Property(x => x.StockQuantity).HasPrecision(18, 2);
 
@@ -88,7 +96,8 @@ namespace OracleEfDemo.DbContext
 
             #region StockLog data conf
             builder.Entity<StockLog>().Property(x => x.ProductName).HasMaxLength(25);
-            builder.Entity<StockLog>().Property(x => x.StockQuantity).HasPrecision(18, 2);
+            builder.Entity<StockLog>().Property(x => x.QuantityChange).HasPrecision(18, 2);
+            builder.Entity<StockLog>().Property(x => x.StockAfter).HasPrecision(18, 2);
             builder.Entity<StockLog>().Property(x => x.UserName).HasMaxLength(100);
             #endregion
 

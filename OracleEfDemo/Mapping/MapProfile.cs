@@ -26,6 +26,7 @@ namespace OracleEfDemo.Mapping
 
             CreateMap<Products, ProductsDto>().ReverseMap();
             CreateMap<StockLog, StockLogDto>().ReverseMap();
+            CreateMap<UserApp, UserDto>().ReverseMap();
         }
     }
 }

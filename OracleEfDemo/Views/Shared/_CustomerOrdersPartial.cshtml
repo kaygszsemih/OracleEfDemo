@@ -1,0 +1,35 @@
+﻿@model List<OrderListDto>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info mb-0">Bu müşterinin siparişi yok.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Sipariş No</th>
+                    <th>Müşteri Adı</th>
+                    <th class="text-end">Sipariş Tutarı</th>
+                    <th>Sipariş Tarihi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    <tr>
+                        <td>@o.OrderNumber</td>
+                        <td>@o.CustomerName</td>
+                        <td class="text-end">@o.Total.ToString("C")</td>
+                        <td>@o.OrderDate.ToShortDateString()</td>
+                        <td>
+                            <a href="/Order/AddorUpdateOrder?id=@o.Id" class="btn btn-icon btn-success"><i class="bi bi-pencil"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

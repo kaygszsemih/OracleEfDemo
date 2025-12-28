@@ -1,24 +1,27 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NToastNotify;
+using Oracle.ManagedDataAccess.Client;
 using OracleEfDemo.DbContext;
 using OracleEfDemo.Dtos;
+using OracleEfDemo.Helpers;
 using OracleEfDemo.Models;
 
 namespace OracleEfDemo.Controllers
 {
     [Authorize]
-    public class CustomerController(AppDbContext context, IMapper mapper, IToastNotification toastNotification) : Controller
+    public class CustomerController(AppDbContext context, IMapper mapper, IToastNotification toastNotification, GenericRepository repository) : Controller
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly IToastNotification _toastNotification = toastNotification;
+        private readonly GenericRepository _repository = repository;
 
         public IActionResult Customers()
         {
-            var data = _context.Customers.ToList();
-            return View(_mapper.Map<List<CustomersDto>>(data));
+            return View(_repository.GetCustomerList<CustomerListDto>());
         }
 
         public IActionResult AddorUpdateCustomer(int id)
@@ -73,7 +76,13 @@ namespace OracleEfDemo.Controllers
         {
             var customerData = _context.Customers.Find(id);
 
-            if (customerData != null)
+            if (customerData == null)
+            {
+                _toastNotification.AddWarningToastMessage("Müşteri bulunamadı.");
+                return RedirectToAction(nameof(Customers));
+            }
+
+            try
             {
                 _context.Customers.Remove(customerData);
                 _context.SaveChanges();
@@ -81,14 +90,16 @@ namespace OracleEfDemo.Controllers
                 _toastNotification.AddSuccessToastMessage("Müşteri silindi.");
                 return RedirectToAction(nameof(Customers));
             }
+            catch (DbUpdateException ex) when (ex.GetBaseException() is OracleException oex)
+            {
+                if (oex.Number == 2292)
+                {
+                    _toastNotification.AddErrorToastMessage("Bu müşteriye ait sipariş kayıtları olduğu için silinemez.");
+                    return RedirectToAction(nameof(Customers));
+                }
 
-            _toastNotification.AddWarningToastMessage("Müşteri bulunamadı.");
-            return RedirectToAction(nameof(Customers));
-        }
-
-        public IActionResult CustomerOrderList(int customerId)
-        {
-            return View();
+                throw;
+            }
         }
     }
 }
